@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'maven-publish'
+}
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+    buildFeatures {
+        dataBinding true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked"
+    options.deprecation = true
+}
+
+afterEvaluate {
+    task sourceJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier "sources"
+    }
+    publishing {
+        repositories {
+            maven {
+                url "$environment.local_maven_dir"
+            }
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId "$environment.group_id"
+                version android.defaultConfig.versionName
+                artifactId project.name
+                artifact sourceJar {
+                    classifier "sources"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "androidx.core:core-ktx:$versions.ktx.core"
+    implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.android_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.android_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.android_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$versions.android_lifecycle"
+    api "com.rands.java:commons:1.0.0"
+    api "com.mikepenz:iconics-core:5.3.0"
+    api "com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar"
+}
