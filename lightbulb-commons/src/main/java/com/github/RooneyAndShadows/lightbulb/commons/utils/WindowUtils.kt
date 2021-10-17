@@ -1,16 +1,9 @@
-package com.rands.lightbulb.commons.utils
+package com.github.RooneyAndShadows.lightbulb.commons.utils
 
 import android.app.Activity
-import android.content.Context
-import android.content.res.Resources
-import android.content.res.TypedArray
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.WindowInsets
-import android.view.WindowMetrics
-import androidx.core.content.ContextCompat
 import java.lang.Exception
 
 class WindowUtils {

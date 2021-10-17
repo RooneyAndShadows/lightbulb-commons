@@ -1,11 +1,10 @@
-package com.rands.lightbulb.commons.models
+package com.github.RooneyAndShadows.lightbulb.commons.models
 
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.ViewModel
 
-abstract class BaseObservableViewModel : ViewModel(), Observable {
+class BaseObservableDataModel : Observable {
     private val callbacks = PropertyChangeRegistry()
     override fun addOnPropertyChangedCallback(
             callback: OnPropertyChangedCallback) {

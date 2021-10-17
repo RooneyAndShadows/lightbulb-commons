@@ -1,4 +1,4 @@
-package com.rands.lightbulb.commons.utils
+package com.github.RooneyAndShadows.lightbulb.commons.utils
 
 import android.app.Activity
 import android.content.Context

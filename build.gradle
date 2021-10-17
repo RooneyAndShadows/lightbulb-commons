@@ -11,7 +11,7 @@ buildscript {
                 java_commons     : "1.0.0",
         ]
         environment = [
-                "group_id": "com.rands.lightbulb"
+                "group_id": "com.github.RooneyAndShadows"
         ]
     }
     repositories {

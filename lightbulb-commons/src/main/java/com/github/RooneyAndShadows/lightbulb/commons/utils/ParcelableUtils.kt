@@ -1,7 +1,7 @@
-package com.rands.lightbulb.commons.utils
+package com.github.RooneyAndShadows.lightbulb.commons.utils
 
 import android.os.Parcel
-import com.rands.java.commons.date.DateUtils
+import com.github.RooneyAndShadows.commons.date.DateUtils
 import java.util.*
 import kotlin.collections.HashMap
 

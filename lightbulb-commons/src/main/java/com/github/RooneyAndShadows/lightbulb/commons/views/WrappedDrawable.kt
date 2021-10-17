@@ -1,4 +1,4 @@
-package com.rands.lightbulb.commons.views
+package com.github.RooneyAndShadows.lightbulb.commons.views
 
 import android.graphics.Canvas
 import android.graphics.ColorFilter
