@@ -5,7 +5,6 @@ plugins {
 
 android {
     compileSdk 30
-
     defaultConfig {
         applicationId "com.rands.lightbulb.commons"
         minSdk 21
