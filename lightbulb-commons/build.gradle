@@ -11,7 +11,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0.4"
+        versionName "1.0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -66,7 +66,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.android_lifecycle"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.android_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$versions.android_lifecycle"
-    api "com.github.RooneyAndShadows:java-commons:$versions.java_commons"
+    implementation "com.github.RooneyAndShadows:java-commons:$versions.java_commons"
     api "com.mikepenz:iconics-core:5.3.0"
     api "com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar"
 }
