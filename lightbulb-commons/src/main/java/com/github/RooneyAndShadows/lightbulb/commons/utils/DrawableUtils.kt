@@ -1,10 +1,10 @@
-package com.github.RooneyAndShadows.lightbulb.commons.utils
+package com.github.rooneyandshadows.lightbulb.commons.utils
 
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
-import com.github.RooneyAndShadows.lightbulb.commons.views.WrappedDrawable
+import com.github.rooneyandshadows.lightbulb.commons.views.WrappedDrawable
 
 class DrawableUtils {
     companion object {

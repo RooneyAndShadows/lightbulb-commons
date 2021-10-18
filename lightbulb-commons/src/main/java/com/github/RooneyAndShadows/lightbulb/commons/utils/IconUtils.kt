@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.lightbulb.commons.utils
+package com.github.rooneyandshadows.lightbulb.commons.utils
 
 import android.content.Context
 import com.mikepenz.iconics.IconicsColor

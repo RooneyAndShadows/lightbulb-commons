@@ -8,7 +8,9 @@ buildscript {
                 ],
                 android_appcompat: "1.3.1",
                 android_lifecycle: "2.3.1",
-                java_commons     : "1.0.1",
+                java             : [
+                        commons: "1.0.3"
+                ]
         ]
         environment = [
                 "group_id": "com.github.RooneyAndShadows"
@@ -22,7 +24,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
-
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

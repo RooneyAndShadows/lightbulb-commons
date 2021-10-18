@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.commons
+package com.github.rooneyandshadows.lightbulb.commons
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

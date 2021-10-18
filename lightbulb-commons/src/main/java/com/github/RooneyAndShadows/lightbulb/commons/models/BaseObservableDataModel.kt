@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.lightbulb.commons.models
+package com.github.rooneyandshadows.lightbulb.commons.models
 
 import androidx.databinding.Observable
 import androidx.databinding.Observable.OnPropertyChangedCallback
