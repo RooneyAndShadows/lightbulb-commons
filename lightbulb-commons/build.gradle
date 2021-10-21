@@ -66,7 +66,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.android_lifecycle"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.android_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$versions.android_lifecycle"
-    implementation "com.github.RooneyAndShadows:java-commons:$versions.java.commons"
+    implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
     api "com.mikepenz:iconics-core:5.3.0"
     api "com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar"
 }
