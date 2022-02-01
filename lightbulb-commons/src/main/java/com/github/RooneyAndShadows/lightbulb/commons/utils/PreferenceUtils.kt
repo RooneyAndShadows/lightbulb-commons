@@ -9,6 +9,18 @@ import java.util.*
 class PreferenceUtils {
     companion object {
         @JvmStatic
+        fun clearKey(
+            context: Context,
+            preferenceKey: String,
+        ): Companion {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val editor = preferences.edit()
+            editor.remove(preferenceKey)
+            editor.apply()
+            return Companion
+        }
+
+        @JvmStatic
         fun saveString(
             context: Context,
             preferenceKey: String,

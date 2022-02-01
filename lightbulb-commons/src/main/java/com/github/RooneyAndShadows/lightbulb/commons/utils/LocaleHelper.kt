@@ -2,6 +2,7 @@ package com.github.rooneyandshadows.lightbulb.commons.utils
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import java.util.*
 
@@ -33,6 +34,15 @@ class LocaleHelper {
                 SELECTED_LANGUAGE_KEY,
                 Locale.getDefault().language
             )
+        }
+
+        @JvmStatic
+        fun setLocaleToSystemDefault(context: Context): Context {
+            val systemDefLanguage = Resources.getSystem().configuration.locales[0].language;
+            PreferenceUtils.saveString(context, SELECTED_LANGUAGE_KEY, systemDefLanguage)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                updateResources(context, systemDefLanguage)
+            } else updateResourcesLegacy(context, systemDefLanguage)
         }
 
         @JvmStatic
