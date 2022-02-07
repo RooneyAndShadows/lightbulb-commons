@@ -1,13 +1,35 @@
 package com.github.rooneyandshadows.lightbulb.commons.utils
 
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import androidx.core.graphics.ColorUtils
 import com.github.rooneyandshadows.lightbulb.commons.views.WrappedDrawable
 
 class DrawableUtils {
     companion object {
+
+        @JvmStatic
+        fun getBorderedShape(
+            backgroundColor: Int,
+            strokeColor: Int,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int
+        ): LayerDrawable {
+            return getBorders(
+                backgroundColor,  // Background color
+                strokeColor,  // Border color
+                left,  // Left border in pixels
+                top,  // Top border in pixels
+                right,  // Right border in pixels
+                bottom // Bottom border in pixels
+            )
+        }
+
         @JvmStatic
         fun resizeDrawable(drawable: Drawable?, width: Int, height: Int): Drawable {
             val wrappedDrawable = WrappedDrawable(drawable)
@@ -16,8 +38,33 @@ class DrawableUtils {
         }
 
         @JvmStatic
-        fun getRoundedShapeWithColor(color: Int, width: Int, height: Int, cornerRadius: Int): Drawable {
-            return generateRoundedCornersDrawable(
+        fun getLayeredRoundedCornersDrawable(
+            backgroundColor: Int,
+            foregroundColor: Int,
+            width: Int,
+            height: Int,
+            cornerRadius: Int
+        ): Drawable {
+            return getLayeredRoundedCornersDrawable(
+                backgroundColor,
+                foregroundColor,
+                width,
+                height,
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat()
+            )
+        }
+
+        @JvmStatic
+        fun getRoundedCornersDrawable(
+            color: Int,
+            width: Int,
+            height: Int,
+            cornerRadius: Int
+        ): Drawable {
+            return getRoundedCornersDrawable(
                 color,
                 width,
                 height,
@@ -29,60 +76,8 @@ class DrawableUtils {
         }
 
         @JvmStatic
-        fun getRoundedShapeWithColor(
-            color: Int,
-            topLeftRadius: Int,
-            topRightRadius: Int,
-            bottomRightRadius: Int,
-            bottomLeftRadius: Int,
-            size: Int,
-        ): Drawable {
-            return generateRoundedCornersDrawable(
-                color,
-                size,
-                size,
-                topLeftRadius.toFloat(),
-                topRightRadius.toFloat(),
-                bottomRightRadius.toFloat(),
-                bottomLeftRadius.toFloat()
-            )
-        }
-
-        @JvmStatic
-        fun getRoundedShapeWithColor(
-            color: Int,
-            topLeftRadius: Int,
-            topRightRadius: Int,
-            bottomRightRadius: Int,
-            bottomLeftRadius: Int
-        ): Drawable {
-            return generateRoundedCornersDrawable(
-                color,
-                0,
-                0,
-                topLeftRadius.toFloat(),
-                topRightRadius.toFloat(),
-                bottomRightRadius.toFloat(),
-                bottomLeftRadius.toFloat()
-            )
-        }
-
-        @JvmStatic
-        fun getRoundedShapeWithColor(color: Int, size: Int, cornerRadius: Int): Drawable {
-            return generateRoundedCornersDrawable(
-                color,
-                size,
-                size,
-                cornerRadius.toFloat(),
-                cornerRadius.toFloat(),
-                cornerRadius.toFloat(),
-                cornerRadius.toFloat(),
-            )
-        }
-
-        @JvmStatic
-        fun getRoundedShapeWithColor(color: Int, cornerRadius: Int): Drawable {
-            return generateRoundedCornersDrawable(
+        fun getRoundedCornersDrawable(color: Int, cornerRadius: Int): Drawable {
+            return getRoundedCornersDrawable(
                 color,
                 0,
                 0,
@@ -94,19 +89,49 @@ class DrawableUtils {
         }
 
         @JvmStatic
-        fun getBorderedShape(backgroundColor: Int, strokeColor: Int, left: Int, top: Int, right: Int, bottom: Int): LayerDrawable {
-            return getBorders(
-                backgroundColor,  // Background color
-                strokeColor,  // Border color
-                left,  // Left border in pixels
-                top,  // Top border in pixels
-                right,  // Right border in pixels
-                bottom // Bottom border in pixels
-            )
-        }
-
-        private fun generateRoundedCornersDrawable(
+        fun getLayeredRoundedCornersDrawable(
             backgroundColor: Int,
+            foregroundColor: Int,
+            cornerRadius: Int
+        ): Drawable {
+            return getLayeredRoundedCornersDrawable(
+                backgroundColor,
+                foregroundColor,
+                0,
+                0,
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat(),
+            )
+        }
+
+        @JvmStatic
+        fun getRoundedCornersDrawable(
+            backgroundColor: Int,
+            width: Int?,
+            height: Int?,
+            topLeftRadius: Float,
+            topRightRadius: Float,
+            bottomRightRadius: Float,
+            bottomLeftRadius: Float
+        ): GradientDrawable {
+            return getLayeredRoundedCornersDrawable(
+                Color.TRANSPARENT,
+                backgroundColor,
+                width,
+                height,
+                topLeftRadius,
+                topRightRadius,
+                bottomRightRadius,
+                bottomLeftRadius
+            )
+        }
+
+        @JvmStatic
+        fun getLayeredRoundedCornersDrawable(
+            colorBackground: Int,
+            colorForeground: Int,
             width: Int?,
             height: Int?,
             topLeftRadius: Float,
@@ -121,7 +146,11 @@ class DrawableUtils {
                 bottomRightRadius, bottomRightRadius,
                 bottomLeftRadius, bottomLeftRadius
             )
-            gradientDrawable.setColor(backgroundColor)
+            val color = ColorUtils.compositeColors(
+                colorForeground,
+                colorBackground
+            )
+            gradientDrawable.setColor(color)
             if (width != null && height != null && width > 0 && height > 0)
                 gradientDrawable.setSize(width, height)
             return gradientDrawable
