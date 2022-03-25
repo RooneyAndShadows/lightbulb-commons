@@ -6,6 +6,18 @@ import android.content.res.Resources
 import android.os.Build
 import java.util.*
 
+/*
+In order to work within App bundle add in gradle on android level
+bundle {
+        language {
+            //Specifies that the app bundle should not support
+            //configuration APKs for language resources. These
+            //resources are instead packaged with each base and
+            //dynamic feature APK.
+            enableSplit = false
+        }
+    }
+ */
 class LocaleHelper {
     companion object {
         private const val SELECTED_LANGUAGE_KEY = "Locale.Helper.Selected.Language"
