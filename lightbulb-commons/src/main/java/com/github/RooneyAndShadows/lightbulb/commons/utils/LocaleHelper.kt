@@ -23,6 +23,12 @@ class LocaleHelper {
         private const val SELECTED_LANGUAGE_KEY = "Locale.Helper.Selected.Language"
 
         @JvmStatic
+        fun wrapContext(context: Context): Context {
+            val currentLanguage = getLanguage(context)
+            return setLocale(context, currentLanguage);
+        }
+
+        @JvmStatic
         fun onAttach(context: Context): Context {
             val lang =
                 PreferenceUtils.getString(
