@@ -2,12 +2,27 @@ package com.github.rooneyandshadows.lightbulb.commons.utils
 
 import android.os.Parcel
 import com.github.rooneyandshadows.java.commons.date.DateUtils
+import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.collections.HashMap
 
 @Suppress("unused")
 class ParcelableUtils {
     companion object {
+
+        @JvmStatic
+        fun writeOffsetDateTime(dest: Parcel, date: OffsetDateTime?): Companion {
+            dest.writeByte((if (date == null) 0 else 1).toByte())
+            if (date != null) dest.writeString(
+                DateUtilsOffsetDate.getDateString(
+                    DateUtilsOffsetDate.defaultFormatWithTimeZone,
+                    date
+                )
+            )
+            return Companion
+        }
+
         @JvmStatic
         fun writeDate(dest: Parcel, date: Date?): Companion {
             dest.writeByte((if (date == null) 0 else 1).toByte())
@@ -70,9 +85,19 @@ class ParcelableUtils {
         }
 
         @JvmStatic
-        fun readDate(source: Parcel): Date? {
-            return if (source.readByte().toInt() == 1) DateUtils.getDateFromStringInDefaultFormat(source.readString()) else null
+        fun readOffsetDateTime(source: Parcel): OffsetDateTime? {
+            return if (source.readByte().toInt() == 1) DateUtilsOffsetDate.getDateFromString(
+                DateUtilsOffsetDate.defaultFormatWithTimeZone, source.readString()
+            ) else null
         }
+
+        @JvmStatic
+        fun readDate(source: Parcel): Date? {
+            return if (source.readByte().toInt() == 1) DateUtils.getDateFromStringInDefaultFormat(
+                source.readString()
+            ) else null
+        }
+
 
         @JvmStatic
         fun readInt(source: Parcel): Int? {
@@ -101,7 +126,9 @@ class ParcelableUtils {
 
         @JvmStatic
         fun readUUID(source: Parcel): UUID? {
-            return if (source.readByte().toInt() == 1) UUID.fromString(source.readString()) else null
+            return if (source.readByte()
+                    .toInt() == 1
+            ) UUID.fromString(source.readString()) else null
         }
 
         @JvmStatic
@@ -111,7 +138,7 @@ class ParcelableUtils {
 
         @JvmStatic
         fun <K : Any, V : Any> readTypedMap(source: Parcel): Map<K, V> {
-            val output = HashMap<K,V>()
+            val output = HashMap<K, V>()
             source.readMap(output, ParcelableUtils::class.java.classLoader)
             return output
         }
