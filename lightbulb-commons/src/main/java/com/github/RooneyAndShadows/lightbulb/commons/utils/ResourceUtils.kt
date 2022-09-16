@@ -62,8 +62,13 @@ class ResourceUtils {
         }
 
         @JvmStatic
+        fun getDrawable(ctx: Context?, drawableId: Int?): Drawable? {
+            return getDrawable(ctx, drawableId, false)
+        }
+
+        @JvmStatic
         fun getDrawable(ctx: Context?, drawableId: Int?, mutate: Boolean = false): Drawable? {
-            return if(mutate)ContextCompat.getDrawable(ctx!!, drawableId!!)?.mutate()
+            return if (mutate) ContextCompat.getDrawable(ctx!!, drawableId!!)?.mutate()
             else ContextCompat.getDrawable(ctx!!, drawableId!!)
         }
 
