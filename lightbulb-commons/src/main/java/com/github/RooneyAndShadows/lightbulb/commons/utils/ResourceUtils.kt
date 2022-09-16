@@ -10,7 +10,11 @@ import androidx.core.content.ContextCompat
 class ResourceUtils {
     companion object {
         @JvmStatic
-        fun readNullableColorAttributeFromTypedArray(ctx: Context?, attributesTypedArray: TypedArray, target: Int): Int? {
+        fun readNullableColorAttributeFromTypedArray(
+            ctx: Context?,
+            attributesTypedArray: TypedArray,
+            target: Int
+        ): Int? {
             val colorId = attributesTypedArray.getResourceId(target, -1)
             return if (colorId == -1) null else getColorById(ctx, colorId)
         }
@@ -58,8 +62,9 @@ class ResourceUtils {
         }
 
         @JvmStatic
-        fun getDrawable(ctx: Context?, drawableId: Int?): Drawable? {
-            return ContextCompat.getDrawable(ctx!!, drawableId!!)
+        fun getDrawable(ctx: Context?, drawableId: Int?, mutate: Boolean = false): Drawable? {
+            return if(mutate)ContextCompat.getDrawable(ctx!!, drawableId!!)?.mutate()
+            else ContextCompat.getDrawable(ctx!!, drawableId!!)
         }
 
         @JvmStatic
