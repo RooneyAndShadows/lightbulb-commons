@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -85,13 +86,11 @@ class FileSystemUtils {
         }
 
         @JvmStatic
-        fun openFilePicker(
+        fun initializeFilePicker(
             fragment: Fragment,
             filePickerCallbacks: FilePickerCallbacks
-        ) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        ): ActivityResultLauncher<Intent> {
+            return fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     val uri: Uri = result.data?.data!!
                     val fileName = getFileName(fragment.requireContext(), uri)
@@ -99,17 +98,15 @@ class FileSystemUtils {
                     val inputStream = getFileInputStream(fragment.requireContext(), uri)
                     filePickerCallbacks.onFileChosen(fileName, fileSize, inputStream)
                 }
-            }.launch(intent)
+            }
         }
 
         @JvmStatic
-        fun openFilePicker(
+        fun initializeFilePicker(
             activity: AppCompatActivity,
             filePickerCallbacks: FilePickerCallbacks
-        ) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        ): ActivityResultLauncher<Intent> {
+            return activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     val uri: Uri = result.data?.data!!
                     val fileName = getFileName(activity, uri)
@@ -117,7 +114,14 @@ class FileSystemUtils {
                     val inputStream = getFileInputStream(activity, uri)
                     filePickerCallbacks.onFileChosen(fileName, fileSize, inputStream)
                 }
-            }.launch(intent)
+            }
+        }
+
+        @JvmStatic
+        fun openFilePicker(launcher: ActivityResultLauncher<Intent>) {
+            launcher.launch(Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "*/*"
+            })
         }
 
         @JvmStatic
