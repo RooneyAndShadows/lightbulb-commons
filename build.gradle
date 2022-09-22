@@ -2,17 +2,18 @@
 buildscript {
     ext {
         versions = [
-                kotlin : "1.7.10",
-                ktx    : [
+                kotlin              : "1.7.10",
+                ktx                 : [
                         core: "1.7.0"
                 ],
-                android: [
+                g_play_services_auth: "20.3.0",
+                android             : [
                         appcompat : "1.5.1",
                         lifecycle : "2.5.1",
                         material  : "1.4.0",
                         preference: "1.2.0"
                 ],
-                java   : [
+                java                : [
                         commons: "1.0.6"
                 ]
         ]
