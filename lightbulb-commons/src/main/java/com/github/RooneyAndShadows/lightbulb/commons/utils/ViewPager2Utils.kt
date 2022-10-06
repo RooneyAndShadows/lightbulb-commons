@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ViewPager2Utils {
     companion object {
+        @JvmStatic
         fun reduceDragSensitivity(pager: ViewPager2?) {
             try {
                 val ff = ViewPager2::class.java.getDeclaredField("mRecyclerView")
