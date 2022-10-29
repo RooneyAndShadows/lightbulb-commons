@@ -8,6 +8,7 @@ buildscript {
                 ],
                 g_play_services_auth: "20.3.0",
                 android             : [
+                        biometric : "1.1.0",
                         appcompat : "1.5.1",
                         lifecycle : "2.5.1",
                         material  : "1.4.0",
