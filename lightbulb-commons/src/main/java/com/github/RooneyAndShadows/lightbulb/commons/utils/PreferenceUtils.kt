@@ -1,5 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.commons.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.github.rooneyandshadows.java.commons.string.StringUtils
@@ -8,6 +9,7 @@ import java.util.*
 @Suppress("unused")
 class PreferenceUtils {
     companion object {
+        @SuppressLint("ApplySharedPref")
         @JvmStatic
         fun clearKey(
             context: Context,
@@ -16,10 +18,11 @@ class PreferenceUtils {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = preferences.edit()
             editor.remove(preferenceKey)
-            editor.apply()
+            editor.commit()
             return Companion
         }
 
+        @SuppressLint("ApplySharedPref")
         @JvmStatic
         fun saveString(
             context: Context,
@@ -29,10 +32,11 @@ class PreferenceUtils {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = preferences.edit()
             editor.putString(preferenceKey, preferenceValue)
-            editor.apply()
+            editor.commit()
             return Companion
         }
 
+        @SuppressLint("ApplySharedPref")
         @JvmStatic
         fun saveBoolean(
             context: Context,
@@ -42,7 +46,7 @@ class PreferenceUtils {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = preferences.edit()
             editor.putBoolean(preferenceKey, preferenceValue)
-            editor.apply()
+            editor.commit()
             return Companion
         }
 
@@ -55,6 +59,7 @@ class PreferenceUtils {
             return saveString(context, preferenceKey, preferenceValue.toString())
         }
 
+        @SuppressLint("ApplySharedPref")
         @JvmStatic
         fun saveInt(
             context: Context,
@@ -64,7 +69,7 @@ class PreferenceUtils {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = preferences.edit()
             editor.putInt(preferenceKey, preferenceValue)
-            editor.apply()
+            editor.commit()
             return Companion
         }
 
