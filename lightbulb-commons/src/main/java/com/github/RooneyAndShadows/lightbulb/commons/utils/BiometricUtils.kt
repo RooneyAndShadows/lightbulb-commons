@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.*
 import androidx.biometric.BiometricPrompt
-import androidx.biometric.BiometricPrompt.PromptInfo
+import androidx.biometric.BiometricPrompt.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 
@@ -31,13 +31,15 @@ class BiometricUtils {
         ): BiometricPrompt {
             val executor = ContextCompat.getMainExecutor(activity)
             return BiometricPrompt(activity,
-                executor, object : BiometricPrompt.AuthenticationCallback() {
+                executor, object : AuthenticationCallback() {
                     override fun onAuthenticationError(
                         errorCode: Int,
                         errString: CharSequence
                     ) {
                         super.onAuthenticationError(errorCode, errString)
-                        if (errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS && settings.forceCreateAuthIfNone) {
+                        val noBiometrics = errorCode == ERROR_NO_BIOMETRICS
+                        val noPinOrFigure = errorCode == ERROR_NO_DEVICE_CREDENTIAL
+                        if ((noBiometrics || noPinOrFigure) && settings.forceCreateAuthIfNone) {
                             requestCreateCredentials(activity)
                         } else {
                             settings.authenticationListeners?.onAuthenticationError(
@@ -48,7 +50,7 @@ class BiometricUtils {
                     }
 
                     override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult
+                        result: AuthenticationResult
                     ) {
                         super.onAuthenticationSucceeded(result)
                         settings.authenticationListeners?.onAuthenticationSucceeded()
