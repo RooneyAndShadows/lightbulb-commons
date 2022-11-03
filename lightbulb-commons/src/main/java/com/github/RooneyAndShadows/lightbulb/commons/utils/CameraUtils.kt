@@ -62,6 +62,7 @@ class CameraUtils {
                     }
                     val file = File(directory, fileName)
                     sendImageToPublicDir(context, file)
+                    listeners.onPictureTaken(file)
                 } else listeners.onError(result.resultCode, "")
             }
         }
@@ -86,7 +87,7 @@ class CameraUtils {
                     }
                     val file = File(directory, fileName)
                     sendImageToPublicDir(activity, file)
-                    listeners.onPictureTaken(result.data!!)
+                    listeners.onPictureTaken(file)
                 } else listeners.onError(result.resultCode, "")
             }
         }
@@ -168,7 +169,7 @@ class CameraUtils {
         }
 
         interface CameraListeners {
-            fun onPictureTaken(data: Intent)
+            fun onPictureTaken(imageFile: File)
 
             fun onError(resultCode: Int, details: String)
         }
