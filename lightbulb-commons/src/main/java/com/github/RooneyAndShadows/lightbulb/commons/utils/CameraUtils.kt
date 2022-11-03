@@ -16,9 +16,30 @@ import androidx.fragment.app.Fragment
 import com.github.rooneyandshadows.lightbulb.commons.utils.FileSystemUtils.Companion.getExternalPicsDir
 import java.io.File
 
-
+/*
+Add to manifest
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="net.budgetsight.android.fileprovider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
+======= file_paths.xml
+<paths>
+    <external-files-path
+        name="images"
+        path="Pictures" />
+</paths>
+ */
+@Suppress("unused")
 class CameraUtils {
     companion object {
+
+        private const val FILE_NAME_KEY =
+            "com.github.rooneyandshadows.lightbulb.commons.utils.FILE_NAME"
 
         @JvmStatic
         fun initializeCameraLauncher(
@@ -27,9 +48,21 @@ class CameraUtils {
         ): ActivityResultLauncher<Intent> {
             return fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    sendImageToPublicDir(fragment.requireContext())
-                    listeners.onPictureTaken(result.data!!)
-                } else listeners.onError(result.resultCode)
+                    val context = fragment.requireContext()
+                    val directory = getExternalPicsDir(context)
+                    val fileName = PreferenceUtils.getString(context, FILE_NAME_KEY, "").apply {
+                        PreferenceUtils.clearKey(context, FILE_NAME_KEY)
+                    }
+                    if (fileName.isBlank()) {
+                        listeners.onError(
+                            result.resultCode,
+                            "Failed to get filename for the saved image."
+                        )
+                        return@registerForActivityResult
+                    }
+                    val file = File(directory, fileName)
+                    sendImageToPublicDir(context, file)
+                } else listeners.onError(result.resultCode, "")
             }
         }
 
@@ -40,45 +73,61 @@ class CameraUtils {
         ): ActivityResultLauncher<Intent> {
             return activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
+                    val directory = getExternalPicsDir(activity)
+                    val fileName = PreferenceUtils.getString(activity, FILE_NAME_KEY, "").apply {
+                        PreferenceUtils.clearKey(activity, FILE_NAME_KEY)
+                    }
+                    if (fileName.isBlank()) {
+                        listeners.onError(
+                            result.resultCode,
+                            "Failed to get filename for the saved image."
+                        )
+                        return@registerForActivityResult
+                    }
+                    val file = File(directory, fileName)
+                    sendImageToPublicDir(activity, file)
                     listeners.onPictureTaken(result.data!!)
-                } else listeners.onError(result.resultCode)
+                } else listeners.onError(result.resultCode, "")
             }
         }
 
         @JvmStatic
         fun openCamera(
-            fileName: String,
-            context: Context,
+            launcher: ActivityResultLauncher<Intent>,
             fileProvider: String,
-            launcher: ActivityResultLauncher<Intent>
+            context: Context,
+            fileName: String,
         ) {
+            val fname = fileName.plus(".jpg")
             val externalDirectory = getExternalPicsDir(context)
-            val folder = File(externalDirectory, "MY_APP_PICS")
+            val folder = File(externalDirectory, "")
             if (!folder.exists())
                 folder.mkdirs()
-            val file = File(folder, fileName.plus(".jpg"))
+            val file = File(folder, fname)
             val photoURI = FileProvider.getUriForFile(
                 context,
                 fileProvider,
                 file
             )
+            PreferenceUtils.saveString(context, FILE_NAME_KEY, fname)
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
             launcher.launch(cameraIntent)
         }
 
-        private fun contentValues(): ContentValues {
+        private fun contentValues(displayName: String): ContentValues {
             val values = ContentValues()
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
             values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
             return values
         }
 
-        private fun sendImageToPublicDir(context: Context) {
-            val externalDirectory = getExternalPicsDir(context)
+        @Suppress("DEPRECATION")
+        private fun sendImageToPublicDir(context: Context, sourceFile: File) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val values = contentValues()
+                val values = contentValues(sourceFile.name)
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
                 values.put(MediaStore.Images.Media.IS_PENDING, true)
                 val uri: Uri? = context.contentResolver.insert(
@@ -87,9 +136,7 @@ class CameraUtils {
                 )
                 if (uri != null) {
                     val outputStream = context.contentResolver.openOutputStream(uri)
-                    val folder = File(externalDirectory, "MY_APP_PICS")
-                    val file = File(folder, "MyPhoto.jpg")
-                    FileSystemUtils.copy(file, outputStream!!)
+                    FileSystemUtils.copy(sourceFile, outputStream!!)
                     values.put(MediaStore.Images.Media.IS_PENDING, false)
                     context.contentResolver.update(uri, values, null, null)
                 }
@@ -99,12 +146,9 @@ class CameraUtils {
                 if (!directory.exists()) {
                     println(directory.mkdirs())
                 }
-                val sourceFileDirectory = File(externalDirectory, "MY_APP_PICS")
-                val sourceFile = File(sourceFileDirectory, "MyPhoto.jpg")
-                val fileName = System.currentTimeMillis().toString() + ".jpg"
-                val targetFile = File(directory, fileName)
+                val targetFile = File(directory, sourceFile.name)
                 FileSystemUtils.copy(sourceFile, targetFile)
-                val values = contentValues()
+                val values = contentValues(sourceFile.name)
                 values.put(MediaStore.Images.Media.DATA, targetFile.absolutePath)
                 context.contentResolver.insert(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -126,7 +170,7 @@ class CameraUtils {
         interface CameraListeners {
             fun onPictureTaken(data: Intent)
 
-            fun onError(resultCode: Int)
+            fun onError(resultCode: Int, details: String)
         }
     }
 }
