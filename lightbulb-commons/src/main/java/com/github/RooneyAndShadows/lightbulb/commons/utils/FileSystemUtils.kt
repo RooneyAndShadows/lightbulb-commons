@@ -3,17 +3,16 @@ package com.github.rooneyandshadows.lightbulb.commons.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
+import android.os.Environment
 import android.provider.OpenableColumns
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
 
 class FileSystemUtils {
     companion object {
@@ -58,6 +57,40 @@ class FileSystemUtils {
             if (size < sizeMb * unitUpTreshhold) return kbUnit
             if (size < sizeGb * unitUpTreshhold) return mbUnit
             return if (size < sizeTerra * unitUpTreshhold) gbUnit else mbUnit
+        }
+
+        @JvmStatic
+        fun getExternalPicsDir(context: Context): File? {
+            return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        }
+
+        @JvmStatic
+        fun getExternalFilesDir(context: Context): File? {
+            return context.getExternalFilesDir(null)
+        }
+
+        @JvmStatic
+        fun copy(source: File?, destination: OutputStream) {
+            copy(FileInputStream(source), destination)
+        }
+
+        @JvmStatic
+        fun copy(source: File?, destination: File) {
+            copy(FileInputStream(source), FileOutputStream(destination))
+        }
+
+        @JvmStatic
+        fun copy(source: InputStream, destination: OutputStream) {
+            source.use { inputStream ->
+                destination.use { outputStream ->
+                    // Transfer bytes from in to out
+                    val buf = ByteArray(1024)
+                    var len: Int
+                    while (inputStream.read(buf).also { len = it } > 0) {
+                        outputStream.write(buf, 0, len)
+                    }
+                }
+            }
         }
 
         @JvmStatic
@@ -152,6 +185,15 @@ class FileSystemUtils {
 
         interface FilePickerCallbacks {
             fun onFileChosen(fileName: String, fileSize: Long, inputStream: InputStream)
+        }
+
+        @JvmStatic
+        private fun getApplicationName(context: Context): String {
+            val applicationInfo: ApplicationInfo = context.applicationInfo
+            val stringId = applicationInfo.labelRes
+            return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(
+                stringId
+            )
         }
     }
 }
