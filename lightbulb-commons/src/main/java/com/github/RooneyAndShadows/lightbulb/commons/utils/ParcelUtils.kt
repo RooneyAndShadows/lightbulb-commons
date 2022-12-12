@@ -150,7 +150,7 @@ class ParcelUtils {
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <T : Parcelable> readParcelable(source: Parcel, clazz: Class<T>): Parcelable? {
+        fun <T : Parcelable> readParcelable(source: Parcel, clazz: Class<T>): T? {
             return if (source.readByte().toInt() == 1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     source.readParcelable(ParcelUtils::class.java.classLoader, clazz)

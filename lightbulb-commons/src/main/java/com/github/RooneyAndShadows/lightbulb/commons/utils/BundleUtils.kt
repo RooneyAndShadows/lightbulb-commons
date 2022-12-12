@@ -162,7 +162,7 @@ class BundleUtils {
             key: String,
             source: Bundle,
             clazz: Class<T>
-        ): Parcelable? {
+        ): T? {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 source.getParcelable(key, clazz)
             else
