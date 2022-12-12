@@ -1,16 +1,18 @@
 package com.github.rooneyandshadows.lightbulb.commons.utils
 
+import android.os.Build
 import android.os.Parcel
+import android.os.Parcelable
 import com.github.rooneyandshadows.java.commons.date.DateUtils
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 @Suppress("unused")
-class ParcelableUtils {
+class ParcelUtils {
     companion object {
-
         @JvmStatic
         fun writeOffsetDateTime(dest: Parcel, date: OffsetDateTime?): Companion {
             dest.writeByte((if (date == null) 0 else 1).toByte())
@@ -73,14 +75,31 @@ class ParcelableUtils {
         }
 
         @JvmStatic
+        fun writeParcelable(dest: Parcel, parcelable: Parcelable?): Companion {
+            dest.writeByte((if (parcelable == null) 0 else 1).toByte())
+            if (parcelable != null) dest.writeParcelable(parcelable, 0)
+            return Companion
+        }
+
+        @JvmStatic
         fun writeStringList(dest: Parcel, stringArrayList: List<String>?): Companion {
             dest.writeStringList(stringArrayList)
             return Companion
         }
 
         @JvmStatic
+        fun <T : Parcelable> writeTypedList(
+            dest: Parcel,
+            list: List<T>?
+        ): Companion {
+            dest.writeByte((if (list == null) 0 else 1).toByte())
+            if (list != null) dest.writeTypedList(list)
+            return Companion
+        }
+
+        @JvmStatic
         fun <K : Any, V : Any> writeTypedMap(dest: Parcel, typedMap: Map<K, V>?): Companion {
-            dest.writeMap(typedMap);
+            dest.writeMap(typedMap)
             return Companion
         }
 
@@ -97,7 +116,6 @@ class ParcelableUtils {
                 source.readString()
             ) else null
         }
-
 
         @JvmStatic
         fun readInt(source: Parcel): Int? {
@@ -126,9 +144,19 @@ class ParcelableUtils {
 
         @JvmStatic
         fun readUUID(source: Parcel): UUID? {
-            return if (source.readByte()
-                    .toInt() == 1
-            ) UUID.fromString(source.readString()) else null
+            return if (source.readByte().toInt() == 1)
+                UUID.fromString(source.readString()) else null
+        }
+
+        @Suppress("DEPRECATION")
+        @JvmStatic
+        fun <T : Parcelable> readParcelable(source: Parcel, clazz: Class<T>): Parcelable? {
+            return if (source.readByte().toInt() == 1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    source.readParcelable(ParcelUtils::class.java.classLoader, clazz)
+                else
+                    source.readParcelable(ParcelUtils::class.java.classLoader)
+            } else null
         }
 
         @JvmStatic
@@ -136,10 +164,35 @@ class ParcelableUtils {
             return source.createStringArrayList()
         }
 
+        @Suppress("DEPRECATION")
         @JvmStatic
-        fun <K : Any, V : Any> readTypedMap(source: Parcel): Map<K, V> {
+        fun <V : Parcelable> readTypedList(
+            source: Parcel,
+            clazz: Class<V>
+        ): List<V> {
+            val output = ArrayList<V>()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                source.readList(output, ParcelUtils::class.java.classLoader, clazz)
+            else
+                source.readList(output, ParcelUtils::class.java.classLoader)
+            return output
+        }
+
+        @Suppress("DEPRECATION")
+        @JvmStatic
+        fun <K : Any, V : Any> readTypedMap(
+            source: Parcel,
+            keyClass: Class<K>,
+            valKey: Class<V>
+        ): Map<K, V> {
             val output = HashMap<K, V>()
-            source.readMap(output, ParcelableUtils::class.java.classLoader)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                source.readMap(
+                    output,
+                    ParcelUtils::class.java.classLoader,
+                    keyClass,
+                    valKey
+                ) else source.readMap(output, ParcelUtils::class.java.classLoader)
             return output
         }
     }
