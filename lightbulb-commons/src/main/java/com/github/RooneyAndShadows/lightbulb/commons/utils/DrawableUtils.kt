@@ -12,13 +12,40 @@ class DrawableUtils {
     companion object {
 
         @JvmStatic
+        fun getRoundedBorderedShape(
+            backgroundColor: Int,
+            strokeColor: Int,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
+            topLeftRadius: Float,
+            boottomLeftRadius: Float,
+            topRightRadius: Float,
+            bottomRightRadius: Float,
+        ): LayerDrawable {
+            return getBorders(
+                backgroundColor,  // Background color
+                strokeColor,  // Border color
+                left,  // Left border in pixels
+                top,  // Top border in pixels
+                right,  // Right border in pixels
+                bottom, // Bottom border in pixels
+                topLeftRadius,
+                boottomLeftRadius,
+                topRightRadius,
+                bottomRightRadius
+            )
+        }
+
+        @JvmStatic
         fun getBorderedShape(
             backgroundColor: Int,
             strokeColor: Int,
             left: Int,
             top: Int,
             right: Int,
-            bottom: Int
+            bottom: Int,
         ): LayerDrawable {
             return getBorders(
                 backgroundColor,  // Background color
@@ -41,9 +68,9 @@ class DrawableUtils {
         fun getLayeredRoundedCornersDrawable(
             backgroundColor: Int,
             foregroundColor: Int,
-            width: Int,
-            height: Int,
-            cornerRadius: Int
+            width: Int?,
+            height: Int?,
+            cornerRadius: Int,
         ): Drawable {
             return getLayeredRoundedCornersDrawable(
                 backgroundColor,
@@ -60,9 +87,9 @@ class DrawableUtils {
         @JvmStatic
         fun getRoundedCornersDrawable(
             color: Int,
-            width: Int,
-            height: Int,
-            cornerRadius: Int
+            width: Int?,
+            height: Int?,
+            cornerRadius: Int,
         ): Drawable {
             return getRoundedCornersDrawable(
                 color,
@@ -92,7 +119,7 @@ class DrawableUtils {
         fun getLayeredRoundedCornersDrawable(
             backgroundColor: Int,
             foregroundColor: Int,
-            cornerRadius: Int
+            cornerRadius: Int,
         ): Drawable {
             return getLayeredRoundedCornersDrawable(
                 backgroundColor,
@@ -114,7 +141,7 @@ class DrawableUtils {
             topLeftRadius: Float,
             topRightRadius: Float,
             bottomRightRadius: Float,
-            bottomLeftRadius: Float
+            bottomLeftRadius: Float,
         ): GradientDrawable {
             return getLayeredRoundedCornersDrawable(
                 Color.TRANSPARENT,
@@ -137,7 +164,7 @@ class DrawableUtils {
             topLeftRadius: Float,
             topRightRadius: Float,
             bottomRightRadius: Float,
-            bottomLeftRadius: Float
+            bottomLeftRadius: Float,
         ): GradientDrawable {
             val gradientDrawable = GradientDrawable()
             gradientDrawable.cornerRadii = floatArrayOf(
@@ -157,8 +184,64 @@ class DrawableUtils {
         }
 
         private fun getBorders(
-            bgColor: Int, borderColor: Int,
-            left: Int, top: Int, right: Int, bottom: Int
+            bgColor: Int,
+            borderColor: Int,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
+            topLeftRadius: Float,
+            boottomLeftRadius: Float,
+            topRightRadius: Float,
+            bottomRightRadius: Float,
+
+            ): LayerDrawable {
+            // Initialize new color drawables
+            val borderColorDrawable = getRoundedCornersDrawable(
+                borderColor,
+                null,
+                null,
+                topLeftRadius,
+                topRightRadius,
+                bottomRightRadius,
+                boottomLeftRadius
+            )
+            borderColorDrawable.setBounds(0, 0, 100, 2)
+            val backgroundColorDrawable = getRoundedCornersDrawable(
+                bgColor,
+                null,
+                null,
+                topLeftRadius,
+                topRightRadius,
+                bottomRightRadius,
+                boottomLeftRadius
+            )
+            // Initialize a new array of drawable objects
+            val drawables = arrayOf<Drawable>(
+                borderColorDrawable,
+                backgroundColorDrawable
+            )
+            // Initialize a new layer drawable instance from drawables array
+            val layerDrawable = LayerDrawable(drawables)
+            // Set padding for background color layer
+            layerDrawable.setLayerInset(
+                1,  // Index of the drawable to adjust [background color layer]
+                left,  // Number of pixels to add to the left bound [left border]
+                top,  // Number of pixels to add to the top bound [top border]
+                right,  // Number of pixels to add to the right bound [right border]
+                bottom // Number of pixels to add to the bottom bound [bottom border]
+            )
+            // Finally, return the one or more sided bordered background drawable
+            return layerDrawable
+        }
+
+        private fun getBorders(
+            bgColor: Int,
+            borderColor: Int,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
         ): LayerDrawable {
             // Initialize new color drawables
             val borderColorDrawable = ColorDrawable(borderColor)
@@ -169,11 +252,8 @@ class DrawableUtils {
                 borderColorDrawable,
                 backgroundColorDrawable
             )
-
             // Initialize a new layer drawable instance from drawables array
             val layerDrawable = LayerDrawable(drawables)
-
-
             // Set padding for background color layer
             layerDrawable.setLayerInset(
                 1,  // Index of the drawable to adjust [background color layer]
@@ -182,7 +262,6 @@ class DrawableUtils {
                 right,  // Number of pixels to add to the right bound [right border]
                 bottom // Number of pixels to add to the bottom bound [bottom border]
             )
-
             // Finally, return the one or more sided bordered background drawable
             return layerDrawable
         }
