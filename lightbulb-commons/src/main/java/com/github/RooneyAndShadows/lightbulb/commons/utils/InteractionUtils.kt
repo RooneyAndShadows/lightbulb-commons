@@ -11,7 +11,11 @@ class InteractionUtils {
         @JvmStatic
         fun showMessage(context: Context, errorText: String?) {
             ContextCompat.getMainExecutor(context).execute {
-                Toast.makeText(context, errorText, Toast.LENGTH_LONG).show()
+                try {
+                    Toast.makeText(context, errorText, Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -20,15 +24,19 @@ class InteractionUtils {
             rootView: View,
             errorText: String,
             actionTitle: String?,
-            actionListener: View.OnClickListener?
+            actionListener: View.OnClickListener?,
         ) {
             ContextCompat.getMainExecutor(rootView.context).execute {
-                val bar = Snackbar.make(rootView, errorText, Snackbar.LENGTH_LONG)
-                if (actionTitle != null && actionTitle != "") bar.setAction(
-                    actionTitle,
-                    actionListener
-                )
-                bar.show()
+                try {
+                    val bar = Snackbar.make(rootView, errorText, Snackbar.LENGTH_LONG)
+                    if (actionTitle != null && actionTitle != "") bar.setAction(
+                        actionTitle,
+                        actionListener
+                    )
+                    bar.show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
