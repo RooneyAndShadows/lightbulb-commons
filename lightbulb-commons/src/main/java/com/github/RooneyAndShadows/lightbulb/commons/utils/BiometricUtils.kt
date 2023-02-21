@@ -8,59 +8,92 @@ import androidx.biometric.BiometricManager.Authenticators.*
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.*
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
-@Suppress("unused")
+@Suppress("unused", "UnnecessaryVariable")
 class BiometricUtils {
     companion object {
+
+        @JvmStatic
+        fun requestBiometricAuthentication(
+            fragment: Fragment,
+            settings: AuthSettings
+        ): Companion {
+            val context = fragment.requireContext()
+            buildPrompt(fragment, settings).apply {
+                checkBioMetricSupported(context, this, settings)
+            }
+            return Companion
+        }
 
         @JvmStatic
         fun requestBiometricAuthentication(
             activity: FragmentActivity,
             settings: AuthSettings
         ): Companion {
+            val context = activity
             buildPrompt(activity, settings).apply {
-                checkBioMetricSupported(activity, this, settings)
+                checkBioMetricSupported(context, this, settings)
             }
             return Companion
         }
 
-        private fun buildPrompt(
-            activity: FragmentActivity,
-            settings: AuthSettings
-        ): BiometricPrompt {
-            val executor = ContextCompat.getMainExecutor(activity)
-            return BiometricPrompt(activity,
-                executor, object : AuthenticationCallback() {
-                    override fun onAuthenticationError(
-                        errorCode: Int,
-                        errString: CharSequence
-                    ) {
-                        super.onAuthenticationError(errorCode, errString)
-                        val noBiometrics = errorCode == ERROR_NO_BIOMETRICS
-                        val noPinOrFigure = errorCode == ERROR_NO_DEVICE_CREDENTIAL
-                        if ((noBiometrics || noPinOrFigure) && settings.forceCreateAuthIfNone) {
-                            requestCreateCredentials(activity)
-                        } else {
-                            settings.authenticationListeners?.onAuthenticationError(
-                                errorCode,
-                                errString.toString()
-                            )
-                        }
-                    }
+        private fun buildPrompt(activity: FragmentActivity, settings: AuthSettings): BiometricPrompt {
+            val context = activity
+            val executor = ContextCompat.getMainExecutor(context)
+            return BiometricPrompt(activity, executor, object : AuthenticationCallback() {
+                @Override
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    handleAuthError(context, errorCode, errString.toString(), settings)
+                }
 
-                    override fun onAuthenticationSucceeded(
-                        result: AuthenticationResult
-                    ) {
-                        super.onAuthenticationSucceeded(result)
-                        settings.authenticationListeners?.onAuthenticationSucceeded()
-                    }
+                @Override
+                override fun onAuthenticationSucceeded(result: AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    settings.authenticationListeners?.onAuthenticationSucceeded()
+                }
 
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        settings.authenticationListeners?.onAuthenticationFailed()
-                    }
-                })
+                @Override
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    settings.authenticationListeners?.onAuthenticationFailed()
+                }
+            })
+        }
+
+        private fun buildPrompt(fragment: Fragment, settings: AuthSettings): BiometricPrompt {
+            val context = fragment.requireContext()
+            val executor = ContextCompat.getMainExecutor(context)
+            return BiometricPrompt(fragment, executor, object : AuthenticationCallback() {
+                @Override
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    handleAuthError(context, errorCode, errString.toString(), settings)
+                }
+
+                @Override
+                override fun onAuthenticationSucceeded(result: AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    settings.authenticationListeners?.onAuthenticationSucceeded()
+                }
+
+                @Override
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    settings.authenticationListeners?.onAuthenticationFailed()
+                }
+            })
+        }
+
+        private fun handleAuthError(context: Context, errorCode: Int, errorString: String, authSettings: AuthSettings) {
+            val noBiometrics = errorCode == ERROR_NO_BIOMETRICS
+            val noPinOrFigure = errorCode == ERROR_NO_DEVICE_CREDENTIAL
+            if ((noBiometrics || noPinOrFigure) && authSettings.forceCreateAuthIfNone)
+                requestCreateCredentials(context)
+            else
+                authSettings.authenticationListeners?.onAuthenticationError(errorCode, errorString)
         }
 
         private fun checkBioMetricSupported(

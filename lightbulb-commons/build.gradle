@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 1020
-        versionName "1.0.20"
+        versionCode 1021
+        versionName "1.0.21"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -61,10 +61,10 @@ afterEvaluate {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.6'
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:"
     implementation "androidx.core:core-ktx:$versions.ktx.core"
-    implementation "androidx.biometric:biometric:$versions.android.biometric"
     implementation "androidx.appcompat:appcompat:$versions.android.appcompat"
+    implementation "androidx.biometric:biometric-ktx:$versions.android.biometric"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.android.lifecycle"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.android.lifecycle"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.android.lifecycle"
