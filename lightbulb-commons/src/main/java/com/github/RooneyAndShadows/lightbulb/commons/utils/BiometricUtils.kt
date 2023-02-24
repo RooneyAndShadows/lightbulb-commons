@@ -4,6 +4,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
 import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.*
 import androidx.biometric.BiometricManager.Authenticators.*
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.*
@@ -22,7 +23,7 @@ class BiometricUtils {
         ): Companion {
             val context = fragment.requireContext()
             buildPrompt(fragment, settings).apply {
-                checkBioMetricSupported(context, this, settings)
+                callPrompt(context, this, settings)
             }
             return Companion
         }
@@ -34,7 +35,7 @@ class BiometricUtils {
         ): Companion {
             val context = activity
             buildPrompt(activity, settings).apply {
-                checkBioMetricSupported(context, this, settings)
+                callPrompt(context, this, settings)
             }
             return Companion
         }
@@ -96,44 +97,60 @@ class BiometricUtils {
                 authSettings.authenticationListeners?.onAuthenticationError(errorCode, errorString)
         }
 
-        private fun checkBioMetricSupported(
+        private fun callPrompt(
             context: Context,
             biometricPrompt: BiometricPrompt,
             settings: AuthSettings
         ) {
-            val manager = BiometricManager.from(context)
+            val manager = from(context)
             when (manager.canAuthenticate(BIOMETRIC_WEAK or BIOMETRIC_STRONG)) {
-                BiometricManager.BIOMETRIC_SUCCESS -> {
+                BIOMETRIC_SUCCESS -> {
                     //"App can authenticate using biometrics."
                     requestFingerPrint(
                         biometricPrompt,
-                        settings.title,
-                        settings.subTitle,
-                        settings.cancelButtonText
+                        settings
                     )
                 }
-                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                BIOMETRIC_ERROR_NO_HARDWARE -> {
                     //"No biometric features available on this device."
+                    if (!settings.allowPinOrFigure) {
+                        settings.authenticationListeners?.onAuthenticationError(
+                            BIOMETRIC_ERROR_NO_HARDWARE,
+                            "No biometric features available on this device."
+                        )
+                        return
+                    }
                     requestPinOrFigure(
                         biometricPrompt,
-                        settings.title,
-                        settings.subTitle
+                        settings
                     )
                 }
-                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
                     //"Biometric features are currently unavailable."
+                    if (!settings.allowPinOrFigure) {
+                        settings.authenticationListeners?.onAuthenticationError(
+                            BIOMETRIC_ERROR_HW_UNAVAILABLE,
+                            "Biometric features are currently unavailable."
+                        )
+                        return
+                    }
                     requestPinOrFigure(
                         biometricPrompt,
-                        settings.title,
-                        settings.subTitle
+                        settings
                     )
                 }
-                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                BIOMETRIC_ERROR_NONE_ENROLLED -> {
                     //"No finger prints found"
+                    if (!settings.allowPinOrFigure) {
+                        settings.authenticationListeners?.onAuthenticationError(
+                            BIOMETRIC_ERROR_NONE_ENROLLED,
+                            "No finger prints found"
+                        )
+                        return
+                    }
                     requestPinOrFigure(
                         biometricPrompt,
-                        settings.title,
-                        settings.subTitle
+                        settings
                     )
                 }
                 else -> {
@@ -144,26 +161,23 @@ class BiometricUtils {
 
         private fun requestFingerPrint(
             biometricPrompt: BiometricPrompt,
-            title: String,
-            subtitle: String,
-            cancelButtonText: String
+            settings: AuthSettings
         ) {
             val dialog = PromptInfo.Builder()
-                .setTitle(title)
-                .setSubtitle(subtitle)
+                .setTitle(settings.title)
+                .setSubtitle(settings.subTitle)
             val promptInfo: PromptInfo.Builder = dialog
-            promptInfo.setNegativeButtonText(cancelButtonText)
+            promptInfo.setNegativeButtonText(settings.cancelButtonText)
             biometricPrompt.authenticate(promptInfo.build())
         }
 
         private fun requestPinOrFigure(
             biometricPrompt: BiometricPrompt,
-            title: String,
-            subtitle: String,
+            settings: AuthSettings
         ) {
             val dialog = PromptInfo.Builder()
-                .setTitle(title)
-                .setSubtitle(subtitle)
+                .setTitle(settings.title)
+                .setSubtitle(settings.subTitle)
             val promptInfo: PromptInfo.Builder = dialog
             promptInfo.setAllowedAuthenticators(BIOMETRIC_WEAK or DEVICE_CREDENTIAL)
             biometricPrompt.authenticate(promptInfo.build())
@@ -194,6 +208,8 @@ class BiometricUtils {
     }
 
     class AuthSettings {
+        var allowPinOrFigure: Boolean = false
+            private set
         var title: String = "Biometric Auth"
             private set
         var subTitle: String = "Please authenticate using your biometric credential"
@@ -204,6 +220,10 @@ class BiometricUtils {
             private set
         var authenticationListeners: AuthenticationListeners? = null
             private set
+
+        fun withPinOrFigure(allowPinOrFigure: Boolean): AuthSettings {
+            return apply { this.allowPinOrFigure = allowPinOrFigure }
+        }
 
         fun withTitle(title: String): AuthSettings {
             return apply { this.title = title }
