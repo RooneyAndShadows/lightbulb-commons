@@ -17,6 +17,18 @@ class BiometricUtils {
     companion object {
 
         @JvmStatic
+        fun canAuthenticateWithBiometry(context: Context): Boolean {
+            val manager = from(context)
+            return when (manager.canAuthenticate(BIOMETRIC_STRONG)) {
+                BIOMETRIC_SUCCESS -> true
+                BIOMETRIC_ERROR_NO_HARDWARE -> false //"No biometric features available on this device."
+                BIOMETRIC_ERROR_HW_UNAVAILABLE -> false //"Biometric features are currently unavailable."
+                BIOMETRIC_ERROR_NONE_ENROLLED -> false //"No finger prints found"
+                else -> false //"Unknown cause"
+            }
+        }
+
+        @JvmStatic
         fun requestBiometricAuthentication(
             fragment: Fragment,
             settings: AuthSettings
