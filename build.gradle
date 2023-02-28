@@ -9,7 +9,7 @@ buildscript {
                 g_play_services_auth: "20.4.1",
                 android             : [
                         desugar   : "1.1.6",
-                        biometric : "1.2.0-alpha05",
+                        biometric : "1.1.0",
                         appcompat : "1.6.1",
                         lifecycle : "2.5.1",
                         material  : "1.8.0",

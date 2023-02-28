@@ -28,6 +28,8 @@ class BiometricUtils {
             }
         }
 
+
+
         @JvmStatic
         fun requestBiometricAuthentication(
             fragment: Fragment,
@@ -49,6 +51,7 @@ class BiometricUtils {
             buildPrompt(activity, settings).apply {
                 callPrompt(context, this, settings)
             }
+
             return Companion
         }
 
