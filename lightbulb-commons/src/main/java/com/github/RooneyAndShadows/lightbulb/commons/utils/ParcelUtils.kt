@@ -3,12 +3,11 @@ package com.github.rooneyandshadows.lightbulb.commons.utils
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.SparseArray
 import com.github.rooneyandshadows.java.commons.date.DateUtils
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import java.time.OffsetDateTime
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 @Suppress("unused")
 class ParcelUtils {
@@ -82,15 +81,35 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun writeStringList(dest: Parcel, stringArrayList: List<String>?): Companion {
-            dest.writeStringList(stringArrayList)
+        fun writeStringList(dest: Parcel, stringList: List<String>?): Companion {
+            dest.writeStringList(stringList)
+            return Companion
+        }
+
+        @JvmStatic
+        fun <T : Any> writeSparseArray(
+            dest: Parcel,
+            list: SparseArray<T>?,
+        ): Companion {
+            dest.writeByte((if (list == null) 0 else 1).toByte())
+            if (list != null) dest.writeSparseArray(list)
+            return Companion
+        }
+
+        @JvmStatic
+        fun <T : Any> writeList(
+            dest: Parcel,
+            list: List<T>?,
+        ): Companion {
+            dest.writeByte((if (list == null) 0 else 1).toByte())
+            if (list != null) dest.writeList(list)
             return Companion
         }
 
         @JvmStatic
         fun <T : Parcelable> writeTypedList(
             dest: Parcel,
-            list: List<T>?
+            list: List<T>?,
         ): Companion {
             dest.writeByte((if (list == null) 0 else 1).toByte())
             if (list != null) dest.writeTypedList(list)
@@ -98,8 +117,8 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun <K : Any, V : Any> writeTypedMap(dest: Parcel, typedMap: Map<K, V>?): Companion {
-            dest.writeMap(typedMap)
+        fun <K : Any, V : Any> writeMap(dest: Parcel, map: Map<K, V>?): Companion {
+            dest.writeMap(map)
             return Companion
         }
 
@@ -166,34 +185,51 @@ class ParcelUtils {
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <V : Parcelable> readTypedList(
-            source: Parcel,
-            clazz: Class<V>
-        ): List<V> {
-            val output = ArrayList<V>()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.readList(output, ParcelUtils::class.java.classLoader, clazz)
+        fun <V : Any> readSparseArray(source: Parcel, clazz: Class<V>): SparseArray<V> {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                source.readSparseArray(ParcelUtils::class.java.classLoader, clazz) ?: SparseArray()
             else
-                source.readList(output, ParcelUtils::class.java.classLoader)
-            return output
+                source.readSparseArray(ParcelUtils::class.java.classLoader) ?: SparseArray()
         }
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <K : Any, V : Any> readTypedMap(
+        fun <V : Any> readList(
+            source: Parcel,
+            clazz: Class<V>,
+        ): List<V> {
+            return mutableListOf<V>().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    source.readList(this, ParcelUtils::class.java.classLoader, clazz)
+                else
+                    source.readList(this, ParcelUtils::class.java.classLoader)
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        @JvmStatic
+        fun <V : Parcelable> readTypedList(
+            source: Parcel,
+            creator: Parcelable.Creator<V>,
+        ): List<V> {
+            return mutableListOf<V>().apply {
+                source.readTypedList(this, creator)
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        @JvmStatic
+        fun <K : Any, V : Any> readMap(
             source: Parcel,
             keyClass: Class<K>,
-            valKey: Class<V>
+            valKey: Class<V>,
         ): Map<K, V> {
-            val output = HashMap<K, V>()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.readMap(
-                    output,
-                    ParcelUtils::class.java.classLoader,
-                    keyClass,
-                    valKey
-                ) else source.readMap(output, ParcelUtils::class.java.classLoader)
-            return output
+            return mutableMapOf<K, V>().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    source.readMap(this, ParcelUtils::class.java.classLoader, keyClass, valKey)
+                else
+                    source.readMap(this, ParcelUtils::class.java.classLoader)
+            }
         }
     }
 }

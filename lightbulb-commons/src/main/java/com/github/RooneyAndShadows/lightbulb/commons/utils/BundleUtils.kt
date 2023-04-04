@@ -71,12 +71,8 @@ class BundleUtils {
         }
 
         @JvmStatic
-        fun putStringList(
-            key: String,
-            dest: Bundle,
-            stringArrayList: ArrayList<String>?
-        ): Companion {
-            dest.putStringArrayList(key, stringArrayList)
+        fun putStringList(key: String, dest: Bundle, list: List<String>?): Companion {
+            dest.putStringArrayList(key, list as ArrayList<String>)
             return Companion
         }
 
@@ -84,19 +80,19 @@ class BundleUtils {
         fun <T : Parcelable> putSparseParcelableArray(
             key: String,
             dest: Bundle,
-            array: SparseArray<T>?
+            sparseParcelableArray: SparseArray<T>?,
         ): Companion {
-            dest.putSparseParcelableArray(key, array)
+            dest.putSparseParcelableArray(key, sparseParcelableArray)
             return Companion
         }
 
         @JvmStatic
-        fun <T : Parcelable> putParcelableArrayList(
+        fun <T : Parcelable> putParcelableList(
             key: String,
             dest: Bundle,
-            list: ArrayList<T>?
+            list: List<T>?,
         ): Companion {
-            dest.putParcelableArrayList(key, list)
+            dest.putParcelableArrayList(key, list as ArrayList<T>)
             return Companion
         }
 
@@ -104,7 +100,7 @@ class BundleUtils {
         fun putSerializable(
             key: String,
             dest: Bundle,
-            serializable: Serializable?
+            serializable: Serializable?,
         ): Companion {
             dest.putSerializable(key, serializable)
             return Companion
@@ -161,12 +157,10 @@ class BundleUtils {
         fun <T : Parcelable> getParcelable(
             key: String,
             source: Bundle,
-            clazz: Class<T>
+            clazz: Class<T>,
         ): T? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.getParcelable(key, clazz)
-            else
-                source.getParcelable(key)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getParcelable(key, clazz)
+            else source.getParcelable(key)
         }
 
         @JvmStatic
@@ -179,25 +173,21 @@ class BundleUtils {
         fun <V : Parcelable> getSparseParcelableArray(
             key: String,
             source: Bundle,
-            clazz: Class<V>
+            clazz: Class<V>,
         ): SparseArray<V>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.getSparseParcelableArray(key, clazz)
-            else
-                source.getSparseParcelableArray(key)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getSparseParcelableArray(key, clazz)
+            else source.getSparseParcelableArray(key)
         }
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <V : Parcelable> getParcelableArrayList(
+        fun <V : Parcelable> getParcelableList(
             key: String,
             source: Bundle,
-            clazz: Class<V>
+            clazz: Class<V>,
         ): List<V>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.getParcelableArrayList(key, clazz)
-            else
-                source.getParcelableArrayList(key)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getParcelableArrayList(key, clazz)
+            else source.getParcelableArrayList(key)
         }
 
         @Suppress("DEPRECATION", "UNCHECKED_CAST")
@@ -205,12 +195,10 @@ class BundleUtils {
         fun <V : Serializable> getSerializable(
             key: String,
             source: Bundle,
-            clazz: Class<V>
+            clazz: Class<V>,
         ): V? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                source.getSerializable(key, clazz)
-            else
-                source.getSerializable(key) as V
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getSerializable(key, clazz)
+            else source.getSerializable(key) as V
         }
     }
 }
