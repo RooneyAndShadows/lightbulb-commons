@@ -27,7 +27,12 @@ class ParcelUtils {
         @JvmStatic
         fun writeDate(dest: Parcel, date: Date?): Companion {
             dest.writeByte((if (date == null) 0 else 1).toByte())
-            if (date != null) dest.writeString(DateUtils.getDateStringInDefaultFormat(date))
+            if (date != null) dest.writeString(
+                DateUtils.getDateString(
+                    DateUtils.defaultFormatWithTimeZone,
+                    date
+                )
+            )
             return Companion
         }
 
@@ -131,7 +136,8 @@ class ParcelUtils {
 
         @JvmStatic
         fun readDate(source: Parcel): Date? {
-            return if (source.readByte().toInt() == 1) DateUtils.getDateFromStringInDefaultFormat(
+            return if (source.readByte().toInt() == 1) DateUtils.getDateFromString(
+                DateUtils.defaultFormatWithTimeZone,
                 source.readString()
             ) else null
         }
