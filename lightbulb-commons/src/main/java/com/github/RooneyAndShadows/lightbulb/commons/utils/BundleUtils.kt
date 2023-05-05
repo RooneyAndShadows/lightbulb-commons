@@ -9,6 +9,7 @@ import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import java.io.Serializable
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused")
 class BundleUtils {
@@ -101,7 +102,11 @@ class BundleUtils {
             dest: Bundle,
             list: List<T>?,
         ): Companion {
-            dest.putParcelableArrayList(key, list as ArrayList<T>)
+            when (list) {
+                null -> dest.putParcelableArrayList(key, ArrayList())
+                is ArrayList<T> -> dest.putParcelableArrayList(key, list)
+                else -> dest.putParcelableArrayList(key, ArrayList(list))
+            }
             return Companion
         }
 
