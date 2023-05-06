@@ -81,8 +81,8 @@ class BundleUtils {
         }
 
         @JvmStatic
-        fun putStringList(key: String, dest: Bundle, list: List<String>?): Companion {
-            dest.putStringArrayList(key, list as ArrayList<String>)
+        fun putStringArrayList(key: String, dest: Bundle, list: ArrayList<String>?): Companion {
+            dest.putStringArrayList(key, list)
             return Companion
         }
 
@@ -97,16 +97,12 @@ class BundleUtils {
         }
 
         @JvmStatic
-        fun <T : Parcelable> putParcelableList(
+        fun <T : Parcelable> putParcelableArrayList(
             key: String,
             dest: Bundle,
-            list: List<T>?,
+            list: ArrayList<T>?,
         ): Companion {
-            when (list) {
-                null -> dest.putParcelableArrayList(key, ArrayList())
-                is ArrayList<T> -> dest.putParcelableArrayList(key, list)
-                else -> dest.putParcelableArrayList(key, ArrayList(list))
-            }
+            dest.putParcelableArrayList(key, list)
             return Companion
         }
 
@@ -184,7 +180,7 @@ class BundleUtils {
         }
 
         @JvmStatic
-        fun getStringList(key: String, source: Bundle): List<String>? {
+        fun getStringArrayList(key: String, source: Bundle): ArrayList<String>? {
             return source.getStringArrayList(key)
         }
 
@@ -201,11 +197,11 @@ class BundleUtils {
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <V : Parcelable> getParcelableList(
+        fun <V : Parcelable> getParcelableArrayList(
             key: String,
             source: Bundle,
             clazz: Class<V>,
-        ): List<V>? {
+        ): ArrayList<V>? {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getParcelableArrayList(key, clazz)
             else source.getParcelableArrayList(key)
         }

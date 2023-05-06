@@ -8,6 +8,7 @@ import com.github.rooneyandshadows.java.commons.date.DateUtils
 import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused")
 class ParcelUtils {
@@ -86,7 +87,7 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun writeStringList(dest: Parcel, stringList: List<String>?): Companion {
+        fun writeStringArrayList(dest: Parcel, stringList: ArrayList<String>?): Companion {
             dest.writeStringList(stringList)
             return Companion
         }
@@ -102,9 +103,9 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun <T : Any> writeList(
+        fun <T : Any> writeArrayList(
             dest: Parcel,
-            list: List<T>?,
+            list: ArrayList<T>?,
         ): Companion {
             dest.writeByte((if (list == null) 0 else 1).toByte())
             if (list != null) dest.writeList(list)
@@ -112,9 +113,9 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun <T : Parcelable> writeTypedList(
+        fun <T : Parcelable> writeTypedArrayList(
             dest: Parcel,
-            list: List<T>?,
+            list: ArrayList<T>?,
         ): Companion {
             dest.writeByte((if (list == null) 0 else 1).toByte())
             if (list != null) dest.writeTypedList(list)
@@ -122,7 +123,7 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun <K : Any, V : Any> writeMap(dest: Parcel, map: Map<K, V>?): Companion {
+        fun <K : Any, V : Any> writeHashMap(dest: Parcel, map: HashMap<K, V>?): Companion {
             dest.writeMap(map)
             return Companion
         }
@@ -185,7 +186,7 @@ class ParcelUtils {
         }
 
         @JvmStatic
-        fun readStringList(source: Parcel): List<String>? {
+        fun readStringList(source: Parcel): ArrayList<String>? {
             return source.createStringArrayList()
         }
 
@@ -200,11 +201,11 @@ class ParcelUtils {
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <V : Any> readList(
+        fun <V : Any> readArrayList(
             source: Parcel,
             clazz: Class<V>,
-        ): List<V> {
-            return mutableListOf<V>().apply {
+        ): ArrayList<V> {
+            return ArrayList<V>().apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     source.readList(this, ParcelUtils::class.java.classLoader, clazz)
                 else
@@ -214,23 +215,23 @@ class ParcelUtils {
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <V : Parcelable> readTypedList(
+        fun <V : Parcelable> readTypedArrayList(
             source: Parcel,
             creator: Parcelable.Creator<V>,
-        ): List<V> {
-            return mutableListOf<V>().apply {
+        ): ArrayList<V> {
+            return ArrayList<V>().apply {
                 source.readTypedList(this, creator)
             }
         }
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun <K : Any, V : Any> readMap(
+        fun <K : Any, V : Any> readHashMap(
             source: Parcel,
             keyClass: Class<K>,
             valKey: Class<V>,
-        ): Map<K, V> {
-            return mutableMapOf<K, V>().apply {
+        ): HashMap<K, V> {
+            return HashMap<K, V>().apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     source.readMap(this, ParcelUtils::class.java.classLoader, keyClass, valKey)
                 else
