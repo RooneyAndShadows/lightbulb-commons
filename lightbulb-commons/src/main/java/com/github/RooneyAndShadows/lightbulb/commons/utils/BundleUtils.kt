@@ -1,6 +1,7 @@
 package com.github.rooneyandshadows.lightbulb.commons.utils
 
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.SparseArray
@@ -9,7 +10,7 @@ import com.github.rooneyandshadows.java.commons.date.DateUtilsOffsetDate
 import java.io.Serializable
 import java.time.OffsetDateTime
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Suppress("unused")
 class BundleUtils {
@@ -107,6 +108,16 @@ class BundleUtils {
         }
 
         @JvmStatic
+        fun <K, V> putHashMap(
+            key: String,
+            dest: Bundle,
+            hashMap: HashMap<K, V>?,
+        ): Companion {
+            dest.putSerializable(key, HashMapWrapper(hashMap))
+            return Companion
+        }
+
+        @JvmStatic
         fun putSerializable(
             key: String,
             dest: Bundle,
@@ -175,7 +186,7 @@ class BundleUtils {
             source: Bundle,
             clazz: Class<T>,
         ): T? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getParcelable(key, clazz)
+            return if (SDK_INT >= TIRAMISU) source.getParcelable(key, clazz)
             else source.getParcelable(key)
         }
 
@@ -191,7 +202,7 @@ class BundleUtils {
             source: Bundle,
             clazz: Class<V>,
         ): SparseArray<V>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getSparseParcelableArray(key, clazz)
+            return if (SDK_INT >= TIRAMISU) source.getSparseParcelableArray(key, clazz)
             else source.getSparseParcelableArray(key)
         }
 
@@ -202,8 +213,18 @@ class BundleUtils {
             source: Bundle,
             clazz: Class<V>,
         ): ArrayList<V>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getParcelableArrayList(key, clazz)
+            return if (SDK_INT >= TIRAMISU) source.getParcelableArrayList(key, clazz)
             else source.getParcelableArrayList(key)
+        }
+
+        @Suppress("DEPRECATION", "UNCHECKED_CAST")
+        fun <K, V> getHashMap(
+            key: String,
+            source: Bundle,
+        ): HashMap<K, V>? {
+            val wrapper = if (SDK_INT >= TIRAMISU) source.getSerializable(key, HashMapWrapper::class.java)
+            else source.getSerializable(key)
+            return (wrapper as HashMapWrapper<K, V>?)?.map
         }
 
         @Suppress("DEPRECATION", "UNCHECKED_CAST")
@@ -213,8 +234,10 @@ class BundleUtils {
             source: Bundle,
             clazz: Class<V>,
         ): V? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) source.getSerializable(key, clazz)
+            return if (SDK_INT >= TIRAMISU) source.getSerializable(key, clazz)
             else source.getSerializable(key) as V
         }
     }
+
+    private class HashMapWrapper<K, V>(val map: HashMap<K, V>?) : Serializable
 }
