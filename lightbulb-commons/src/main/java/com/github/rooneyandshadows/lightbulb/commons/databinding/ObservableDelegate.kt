@@ -2,7 +2,7 @@ package com.github.rooneyandshadows.lightbulb.commons.databinding
 
 import kotlin.reflect.KProperty
 
-class BaseObservableDelegate<V : Any>(initialValue: V, private val id: Int, private val observable: ObservableWithNotify) {
+class ObservableDelegate<V : Any>(initialValue: V, private val id: Int, private val observable: ObservableWithNotify) {
     private var value: V = initialValue
 
     operator fun getValue(thisRef: Any, property: KProperty<*>): V {
@@ -17,3 +17,4 @@ class BaseObservableDelegate<V : Any>(initialValue: V, private val id: Int, priv
         observable.notifyPropertyChanged(id)
     }
 }
+
