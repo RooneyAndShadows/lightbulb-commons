@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows_.lightbulb.commons.databinding
+package com.github.rooneyandshadows.lightbulb.commons.databinding
 
 import kotlin.reflect.KProperty
 
