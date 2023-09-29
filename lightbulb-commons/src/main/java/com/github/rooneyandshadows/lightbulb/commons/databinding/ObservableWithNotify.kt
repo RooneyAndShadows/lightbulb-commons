@@ -10,6 +10,9 @@ interface ObservableWithNotify : Observable {
 
     override fun removeOnPropertyChangedCallback(callback: OnPropertyChangedCallback)
 
+    /**
+     * Clears all the listeners for all the properties of this instance.
+     */
     fun clearObservableCallbacks()
 
     /**
@@ -25,5 +28,4 @@ interface ObservableWithNotify : Observable {
      * @param fieldId The generated BR id for the Bindable field.
      */
     fun notifyPropertyChanged(fieldId: Int)
-
 }

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 33
-        versionName "1.2.2"
+        targetSdkVersion 34
+        versionName "1.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -25,9 +25,10 @@ android {
     }
     compileOptions {
         coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+    namespace 'com.github.rooneyandshadows.lightbulb.commons'
 }
 
 tasks.withType(JavaCompile) {
@@ -35,11 +36,12 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
 afterEvaluate {
-    task sourceJar(type: Jar) {
-        from android.sourceSets.main.java.srcDirs
-        classifier "sources"
-    }
     publishing {
         repositories {
             mavenLocal()
@@ -50,9 +52,7 @@ afterEvaluate {
                 groupId "$environment.group_id"
                 version android.defaultConfig.versionName
                 artifactId project.name
-                artifact sourceJar {
-                    classifier "sources"
-                }
+                artifact androidSourcesJar
             }
         }
     }

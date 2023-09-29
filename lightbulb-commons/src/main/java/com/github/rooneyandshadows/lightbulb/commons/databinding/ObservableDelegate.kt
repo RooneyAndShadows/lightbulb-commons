@@ -17,4 +17,3 @@ class ObservableDelegate<V : Any>(initialValue: V, private val id: Int, private 
         observable.notifyPropertyChanged(id)
     }
 }
-
