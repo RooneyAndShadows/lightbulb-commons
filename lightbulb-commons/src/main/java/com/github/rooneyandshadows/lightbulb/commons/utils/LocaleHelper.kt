@@ -30,12 +30,11 @@ class LocaleHelper {
 
         @JvmStatic
         fun onAttach(context: Context): Context {
-            val lang =
-                PreferenceUtils.getString(
-                    context,
-                    SELECTED_LANGUAGE_KEY,
-                    Locale.getDefault().language
-                )
+            val lang = PreferenceUtils.getString(
+                context,
+                SELECTED_LANGUAGE_KEY,
+                Locale.getDefault().language
+            )
             return setLocale(context, lang)
         }
 

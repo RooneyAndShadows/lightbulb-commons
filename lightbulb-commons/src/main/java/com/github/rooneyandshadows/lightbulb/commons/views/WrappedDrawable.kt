@@ -5,7 +5,7 @@ import android.graphics.ColorFilter
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
-class WrappedDrawable(protected val drawable: Drawable?) : Drawable() {
+class WrappedDrawable(private val drawable: Drawable?) : Drawable() {
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
         //update bounds to get correctly
         super.setBounds(left, top, right, bottom)
@@ -28,6 +28,7 @@ class WrappedDrawable(protected val drawable: Drawable?) : Drawable() {
     }
 
     @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun getOpacity(): Int {
         val drawable = drawable
         return drawable?.opacity ?: PixelFormat.UNKNOWN
